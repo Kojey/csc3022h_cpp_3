@@ -13,7 +13,7 @@
 
 class HuffmanTree {
 
-private:
+public:
     class HuffmanNode {
     private:
         char data;
@@ -27,15 +27,23 @@ private:
             left = nullptr;
             right = nullptr;
         }
+        char get_data(void) const {
+            return this->data;
+        }
+        unsigned int get_frequency(void) const {
+            return this->frequency;
+        }
     };
-    bool compare(const HuffmanNode a, const HuffmanNode b);
-public:
+    class Compare {
+    public:
+        bool operator()(const HuffmanNode a, const HuffmanNode b);
+    };
     typedef std::unordered_map<char, unsigned int> & map_type;
-    typedef std::priority_queue<HuffmanNode> & queue_type;
+    typedef std::priority_queue<HuffmanTree::HuffmanNode,std::vector<HuffmanTree::HuffmanNode>, HuffmanTree::Compare> &  queue_type;
     // return a map of char and its frequency in the file named inputFile
     void create_map(map_type  map,std::string inputFile);
     // read <key, value> from map, create a HuffmanNode with those parameters and add it to the queue
-    void fill_queue(queue_type prior_q, map_type  map );
+    void fill_queue(queue_type  prior_q, map_type  map );
     // build huffman tree
     std::unique_ptr<HuffmanNode> build_tree(std::priority_queue<HuffmanNode> & prior_q);
 
