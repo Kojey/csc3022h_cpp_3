@@ -46,14 +46,16 @@ public:
         }
     };
     typedef std::unordered_map<char, unsigned int> & map_type;
-    typedef std::priority_queue<HuffmanTree::HuffmanNode,std::vector<HuffmanTree::HuffmanNode>, HuffmanTree::Compare> &  queue_type;
+    typedef std::unordered_map<char, std::string> & code_type;
+    typedef HuffmanTree::HuffmanNode node_type;
+    typedef std::priority_queue<node_type,std::vector<node_type>, HuffmanTree::Compare> &  queue_type;
     // return a map of char and its frequency in the file named inputFile
-    void create_map(map_type  map,std::string inputFile);
+    void create_map(map_type, std::string);
     // read <key, value> from map, create a HuffmanNode with those parameters and add it to the queue
-    void fill_queue(queue_type  prior_q, map_type  map );
+    void fill_queue(queue_type, map_type);
     // build huffman tree
-    HuffmanTree::HuffmanNode build_tree(HuffmanTree::queue_type prior_q);
-
+    HuffmanTree::HuffmanNode build_tree(HuffmanTree::queue_type);
+    void generate_code_table(node_type, code_type, std::string);
 };
 
 #endif

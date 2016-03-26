@@ -63,3 +63,16 @@ HuffmanTree::HuffmanNode HuffmanTree::build_tree(HuffmanTree::queue_type prior_q
     HuffmanTree::HuffmanNode node(prior_q.top());
     return node;
 }
+
+void HuffmanTree::generate_code_table(node_type node, code_type map, std::string code) {
+    if(node.left == nullptr){ // leaf node
+        map.insert({node.get_data(), code}); // add leadf to code table
+        return;
+    }
+    else{ // not a leaf so has left and right child
+        std::string left = code + "0";
+        std::string right = code + "1";
+        HuffmanTree::generate_code_table(*(node.left), map, left );
+        HuffmanTree::generate_code_table(*(node.right), map, right);
+    }
+}
