@@ -48,9 +48,18 @@ void HuffmanTree::fill_queue( HuffmanTree::queue_type prior_q, HuffmanTree::map_
     }
 }
 
-bool HuffmanTree::Compare::operator()(const HuffmanNode a, const HuffmanNode b) {
-    /*
-     * check if a is less that b
-     */
-    return (a.get_frequency() < b.get_frequency() ? true:false);
+HuffmanTree::HuffmanNode HuffmanTree::build_tree(HuffmanTree::queue_type prior_q) {
+    while (prior_q.size()>1){
+        std::shared_ptr<HuffmanTree::HuffmanNode> left(new HuffmanTree::HuffmanNode(prior_q.top()));
+        prior_q.pop();
+        std::shared_ptr<HuffmanTree::HuffmanNode> right(new HuffmanTree::HuffmanNode(prior_q.top()));
+        prior_q.pop();
+        unsigned int fr = left->get_frequency()+right->get_frequency();
+        HuffmanTree::HuffmanNode head = HuffmanTree::HuffmanNode('\0',fr);
+        head.left = std::move(left);
+        head.right = std::move(right);
+        prior_q.push(head);
+    }
+    HuffmanTree::HuffmanNode node(prior_q.top());
+    return node;
 }

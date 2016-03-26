@@ -23,10 +23,12 @@ public:
         std::shared_ptr<HuffmanNode> right;
         // Constructor
         HuffmanNode() = delete;
-        HuffmanNode(char ch , unsigned int fr) : data(ch), frequency(fr) {
+        HuffmanNode(char ch, unsigned int fr) : data(ch), frequency(fr) {
             left = nullptr;
             right = nullptr;
         }
+//        HuffmanNode(const HuffmanNode & node) = default;
+//        HuffmanNode(HuffmanNode && node) = default;
         char get_data(void) const {
             return this->data;
         }
@@ -36,7 +38,12 @@ public:
     };
     class Compare {
     public:
-        bool operator()(const HuffmanNode a, const HuffmanNode b);
+        bool operator()(const HuffmanNode a, const HuffmanNode b){
+            /*
+             * check if a is greater that b
+             */
+            return (a.get_frequency() > b.get_frequency() ? true:false);
+        }
     };
     typedef std::unordered_map<char, unsigned int> & map_type;
     typedef std::priority_queue<HuffmanTree::HuffmanNode,std::vector<HuffmanTree::HuffmanNode>, HuffmanTree::Compare> &  queue_type;
@@ -45,7 +52,7 @@ public:
     // read <key, value> from map, create a HuffmanNode with those parameters and add it to the queue
     void fill_queue(queue_type  prior_q, map_type  map );
     // build huffman tree
-    std::unique_ptr<HuffmanNode> build_tree(std::priority_queue<HuffmanNode> & prior_q);
+    HuffmanTree::HuffmanNode build_tree(HuffmanTree::queue_type prior_q);
 
 };
 
