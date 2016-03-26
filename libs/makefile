@@ -11,8 +11,8 @@ LIB_NAME=libhuffmanlib.so
 %.o: %.cpp
 	$(CPP) -c -o $@ $< $(CPPFLAGS)
 #the next rule will tell make link together our shared library object (.so file / in windows this will be a DLL file) from the compiled objects
-$(LIB_NAME): huffmanTree.o huffmanTree.h huffmanNode.o huffmanNode.h
-	$(CPP) -o $(LIB_NAME) huffmanTree.o huffmanNode.o $(CPPFLAGS) 
+$(LIB_NAME): huffmanTree.o huffmanTree.h
+	$(CPP) -o $(LIB_NAME) huffmanTree.o $(CPPFLAGS) 
 
 #Never submit binaries to your git repo or vula, so create a rule for cleaning up the binary objects just leaving your source code behind
 clean:
