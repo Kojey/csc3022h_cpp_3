@@ -180,7 +180,21 @@ void HuffmanTree::decompress_file(std::string inputBinFile, std::string code_fil
     file.close();
     // analyse bit_string buffer and produce corresponding letter using map
     std::string bit_string;
-
+    std::string bit;
+    std::cout << "Nybtes " << Nbytes << std::endl;
+    for(int k=0; k<Nbytes; k++){
+        for(int i=7; i>-1; i--) {
+            std::bitset<8> buf;
+            std::bitset<1> bit_result;
+            // extract bit at position i
+            buf = byte[k] & (std::bitset<8>) 1 << i;
+            buf = buf >> i;
+            bit = (buf == 1 ? '1' : '0');
+            bit_string += bit;
+        }
+    }
+    std::cout << bit_string << std::endl;
     // delete *byte
+    delete [] byte;
     // write letters to outputFile
 }
