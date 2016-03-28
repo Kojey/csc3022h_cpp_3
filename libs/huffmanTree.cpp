@@ -108,19 +108,79 @@ void HuffmanTree::generate_compressed_file(std::string outputFile, std::string b
         std::cout << "Error : Unable to open file " << outputFile << std::endl;
         return;
     }
-    typedef std::bitset<1> bit;
-    typedef std::bitset<8> byte;
-    for(int i=0; i<bit_string.size(); i+=8) {
-        byte buf=0;
+    int n = bit_string.size();
+    char end ='\n';
+    file.write(reinterpret_cast<const char *>(&n), sizeof(n));
+    file.write(&end, 1);
+    for(int i=0; i<n; i+=8) {
+        std::bitset<8> buf=0;
         for(int j=i; j<i+8; j++){
             bool x = (*(c+j)=='1'? true:false);
-            byte b = (x?1:0) << 7-(j-i);
-//            std::cout << i << " " << j << " " << *(c+j) << " " << x << " " << j-i << " " << b << std::endl;
-            buf|= b;
+            buf|= (x?1:0) << 7-(j-i);
         }
-        std::cout << buf ;//<< std::endl;
-        const char * p = (const char *) & buf;
-        file.write(p,1);
+        std::cout << buf;
+        file.write((const char *) & buf,1);
     }
     file.close();
+}
+
+void HuffmanTree::compress_file(std::string inputFile, std::string outputFile) {
+    // variables and typedef
+    typedef HuffmanTree::HuffmanNode node_type;
+    HuffmanTree tree;
+    std::unordered_map<char, unsigned int> map;
+    std::unordered_map<char, std::string> code_table;
+    std::priority_queue<node_type,std::vector<node_type>, HuffmanTree::Compare> prior_q;
+    // calling methods
+    tree.create_map(map,inputFile);
+    tree.fill_queue(prior_q,map);
+    HuffmanTree::HuffmanNode node(tree.build_tree(prior_q));
+    tree.generate_code_table(node,code_table,"");
+    tree.generate_code_file(outputFile, code_table);
+    tree.generate_compressed_file(outputFile, tree.generate_bit_string(inputFile,code_table));
+}
+
+void HuffmanTree::decompress_file(std::string inputBinFile, std::string code_file) {
+    // read code_file and store it to a map
+    std::string inputFile = inputBinFile+".hdr";
+    std::unordered_map<char, std::string> code_table;
+
+    std::ifstream file(inputFile.c_str());
+    if(!file){
+        std::cout << "Error : Unable to open file " << inputFile << std::endl;
+        return;
+    }
+    while(!file.eof()){
+        char c;
+        std::string s;
+        file >> c;
+        file >> s;
+        code_table.insert({c,s});
+    }
+    file.close();
+    // read inputBinFile and convert it to a bit_string buffer
+    file.open(inputBinFile.c_str(), std::ios::binary);
+    if(!file){
+        std::cout << "Error : Unable to open file " << inputBinFile << std::endl;
+        return;
+    }
+    char bits,c;
+    file.read(&bits, sizeof(int)); // read the int
+    int Nbits = (int) bits;
+    std::cout << "\nc=" << Nbits << std::endl;
+    int Nbytes = Nbits/8 + (Nbits%8?1:0);
+    std::cout << "i=" << Nbytes << std::endl;
+    file.read(&c, 1); // read the '\n' character
+    std::bitset<8> * byte = new std::bitset<8> [Nbytes];
+    for(int j=0; j<Nbytes; j++){
+        file.read((char *) & byte[j],1);
+        std::cout << byte[j];
+    }
+    std::cout << std::endl;
+    file.close();
+    // analyse bit_string buffer and produce corresponding letter using map
+    std::string bit_string;
+
+    // delete *byte
+    // write letters to outputFile
 }

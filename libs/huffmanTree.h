@@ -59,6 +59,8 @@ public:
     std::string generate_bit_string(std::string, code_type);
     void generate_code_file(std::string, code_type);
     void generate_compressed_file(std::string, std::string);
+    void compress_file(std::string, std::string);
+    void decompress_file(std::string, std::string);
 };
 
 #endif
