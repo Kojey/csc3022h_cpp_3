@@ -86,5 +86,30 @@ std::string HuffmanTree::generate_bit_string(std::string inputFile, code_type ma
     char c;
     std::string bit_string;
     while(file.get(c)) bit_string+=map[c];
+    file.close();
     return bit_string;
+}
+
+void HuffmanTree::generate_code_file(std::string outputFile, code_type map) {
+    std::ofstream file((outputFile+".hdr").c_str());
+    if(!file){
+        std::cout << "Error : Unable to open file " << outputFile << ".hdr" << std::endl;
+        return;
+    }
+    for(const auto& n : map) file << n.first << " " << n.second << "\n";
+    file.close();
+}
+
+void HuffmanTree::generate_compressed_file(std::string outputFile, std::string bit_string) {
+    std::ofstream file(outputFile.c_str(), std::ios::binary);
+    const unsigned char * string = (const unsigned char *) bit_string.c_str();
+    if(!file){
+        std::cout << "Error : Unable to open file " << outputFile << std::endl;
+        return;
+    }
+    for(int i=0; i<bit_string.size(); i++) {
+        std::cout << *(string+i);
+        file << *(string+i);
+    }
+    file.close();
 }
