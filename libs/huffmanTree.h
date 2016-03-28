@@ -56,6 +56,9 @@ public:
     // build huffman tree
     HuffmanTree::HuffmanNode build_tree(HuffmanTree::queue_type);
     void generate_code_table(node_type, code_type, std::string);
+    std::string generate_bit_string(std::string, code_type);
+    void generate_code_file(std::string, code_type);
+    void generate_compressed_file(std::string);
 };
 
 #endif

@@ -76,3 +76,15 @@ void HuffmanTree::generate_code_table(node_type node, code_type map, std::string
         HuffmanTree::generate_code_table(*(node.right), map, right);
     }
 }
+
+std::string HuffmanTree::generate_bit_string(std::string inputFile, code_type map) {
+    std::ifstream file(inputFile.c_str());
+    if(!file){
+        std::cout << "Error : Unable to open file " << inputFile << std::endl;
+        return NULL;
+    }
+    char c;
+    std::string bit_string;
+    while(file.get(c)) bit_string+=map[c];
+    return bit_string;
+}
