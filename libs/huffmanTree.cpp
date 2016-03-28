@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <bitset>
 #include "huffmanTree.h"
 
 void HuffmanTree::create_map(HuffmanTree::map_type map, std::string inputFile) {
@@ -102,14 +103,24 @@ void HuffmanTree::generate_code_file(std::string outputFile, code_type map) {
 
 void HuffmanTree::generate_compressed_file(std::string outputFile, std::string bit_string) {
     std::ofstream file(outputFile.c_str(), std::ios::binary);
-    const unsigned char * string = (const unsigned char *) bit_string.c_str();
+    const unsigned char * c = (const unsigned char *) bit_string.c_str();
     if(!file){
         std::cout << "Error : Unable to open file " << outputFile << std::endl;
         return;
     }
-    for(int i=0; i<bit_string.size(); i++) {
-        std::cout << *(string+i);
-        file << *(string+i);
+    typedef std::bitset<1> bit;
+    typedef std::bitset<8> byte;
+    for(int i=0; i<bit_string.size(); i+=8) {
+        byte buf=0;
+        for(int j=i; j<i+8; j++){
+            bool x = (*(c+j)=='1'? true:false);
+            byte b = (x?1:0) << 7-(j-i);
+//            std::cout << i << " " << j << " " << *(c+j) << " " << x << " " << j-i << " " << b << std::endl;
+            buf|= b;
+        }
+        std::cout << buf ;//<< std::endl;
+        const char * p = (const char *) & buf;
+        file.write(p,1);
     }
     file.close();
 }
