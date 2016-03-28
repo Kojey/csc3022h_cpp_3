@@ -97,7 +97,16 @@ void HuffmanTree::generate_code_file(std::string outputFile, code_type map) {
         std::cout << "Error : Unable to open file " << outputFile << ".hdr" << std::endl;
         return;
     }
-    for(const auto& n : map) file << n.first << " " << n.second << "\n";
+    int i=0;
+    for(const auto& n : map) {
+        file << n.first << std::endl;
+        file << n.second << std::endl;
+        if(i>=map.size()-1){
+            file << "end";
+            break;
+        }
+        i++;
+    }
     file.close();
 }
 
@@ -110,7 +119,7 @@ void HuffmanTree::generate_compressed_file(std::string outputFile, std::string b
     }
     int n = bit_string.size();
     char end ='\n';
-    file.write(reinterpret_cast<const char *>(&n), sizeof(n));
+    file.write(reinterpret_cast<const char *>(&n), sizeof(int));
     file.write(&end, 1);
     for(int i=0; i<n; i+=8) {
         std::bitset<8> buf=0;
@@ -118,7 +127,6 @@ void HuffmanTree::generate_compressed_file(std::string outputFile, std::string b
             bool x = (*(c+j)=='1'? true:false);
             buf|= (x?1:0) << 7-(j-i);
         }
-        std::cout << buf;
         file.write((const char *) & buf,1);
     }
     file.close();
@@ -143,7 +151,7 @@ void HuffmanTree::compress_file(std::string inputFile, std::string outputFile) {
 void HuffmanTree::decompress_file(std::string inputBinFile, std::string code_file) {
     // read code_file and store it to a map
     std::string inputFile = inputBinFile+".hdr";
-    std::unordered_map<char, std::string> code_table;
+    std::unordered_map<std::string, std::string> code_table;
 
     std::ifstream file(inputFile.c_str());
     if(!file){
@@ -151,37 +159,32 @@ void HuffmanTree::decompress_file(std::string inputBinFile, std::string code_fil
         return;
     }
     while(!file.eof()){
-        char c;
-        std::string s;
-        file >> c;
-        file >> s;
-        code_table.insert({c,s});
+        std::string c,s;
+        std::getline(file, c,'\n');
+        if(c=="end")break;
+        std::getline(file, s,'\n');
+        code_table.insert({s,c});
     }
     file.close();
-    // read inputBinFile and convert it to a bit_string buffer
+    // read inputBinFile and convert it to a bit_stream
     file.open(inputBinFile.c_str(), std::ios::binary);
     if(!file){
         std::cout << "Error : Unable to open file " << inputBinFile << std::endl;
         return;
     }
     char bits,c;
-    file.read(&bits, sizeof(int)); // read the int
-    int Nbits = (int) bits;
-    std::cout << "\nc=" << Nbits << std::endl;
+    int Nbits ;
+    file.read(reinterpret_cast<char *>(&Nbits), sizeof(int)); // read the int
     int Nbytes = Nbits/8 + (Nbits%8?1:0);
-    std::cout << "i=" << Nbytes << std::endl;
     file.read(&c, 1); // read the '\n' character
     std::bitset<8> * byte = new std::bitset<8> [Nbytes];
     for(int j=0; j<Nbytes; j++){
         file.read((char *) & byte[j],1);
-        std::cout << byte[j];
     }
-    std::cout << std::endl;
     file.close();
-    // analyse bit_string buffer and produce corresponding letter using map
+    // convert bit_stream to bit_string
     std::string bit_string;
     std::string bit;
-    std::cout << "Nybtes " << Nbytes << std::endl;
     for(int k=0; k<Nbytes; k++){
         for(int i=7; i>-1; i--) {
             std::bitset<8> buf;
@@ -193,8 +196,22 @@ void HuffmanTree::decompress_file(std::string inputBinFile, std::string code_fil
             bit_string += bit;
         }
     }
-    std::cout << bit_string << std::endl;
-    // delete *byte
     delete [] byte;
+    // decode bit_string
+    std::string decoded_string,code;
+    for (int i=0; i<bit_string.size(); i++){
+        std::string ch = bit_string.substr(i,1);
+        code+=ch;
+        if(code_table.find(code)!=code_table.end()){
+            decoded_string+=code_table[code];
+            code = "";
+        }
+        if(i==Nbits)break;
+    }
     // write letters to outputFile
+    std::ofstream ofile(code_file.c_str());
+    while(ofile.is_open()) {
+        ofile << decoded_string;
+        ofile.close();
+    }
 }
