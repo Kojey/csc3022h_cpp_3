@@ -92,7 +92,7 @@ std::string HuffmanTree::generate_bit_string(std::string inputFile, code_type ma
 }
 
 void HuffmanTree::generate_code_file(std::string outputFile, code_type map) {
-    std::ofstream file((outputFile+".hdr").c_str());
+    std::ofstream file(("out\\"+outputFile+".hdr").c_str());
     if(!file){
         std::cout << "Error : Unable to open file " << outputFile << ".hdr" << std::endl;
         return;
@@ -111,7 +111,19 @@ void HuffmanTree::generate_code_file(std::string outputFile, code_type map) {
 }
 
 void HuffmanTree::generate_compressed_file(std::string outputFile, std::string bit_string) {
-    std::ofstream file(outputFile.c_str(), std::ios::binary);
+    std::ofstream file(("out\\"+outputFile).c_str());
+    if(!file){
+        std::cout << "Error : Unable to open file " << outputFile << std::endl;
+        return;
+    }
+    file << bit_string.size();
+    file << "\n" ;
+    file << bit_string;
+    file.close();
+}
+
+void HuffmanTree::generate_binary_compressed_file(std::string outputFile, std::string bit_string) {
+    std::ofstream file(("out\\"+outputFile+".bin").c_str(), std::ios::binary);
     const unsigned char * c = (const unsigned char *) bit_string.c_str();
     if(!file){
         std::cout << "Error : Unable to open file " << outputFile << std::endl;
@@ -145,7 +157,9 @@ void HuffmanTree::compress_file(std::string inputFile, std::string outputFile) {
     HuffmanTree::HuffmanNode node(tree.build_tree(prior_q));
     tree.generate_code_table(node,code_table,"");
     tree.generate_code_file(outputFile, code_table);
-    tree.generate_compressed_file(outputFile, tree.generate_bit_string(inputFile,code_table));
+    std::string bit_string = tree.generate_bit_string(inputFile,code_table);
+    tree.generate_binary_compressed_file(outputFile, bit_string);
+    tree.generate_compressed_file(outputFile, bit_string);
 }
 
 void HuffmanTree::decompress_file(std::string inputBinFile, std::string code_file) {

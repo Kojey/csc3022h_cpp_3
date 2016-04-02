@@ -42,7 +42,7 @@ public:
             /*
              * check if a is greater that b
              */
-            return (a.get_frequency() > b.get_frequency() ? true:false);
+            return (a.get_frequency() >= b.get_frequency() ? true:false);
         }
     };
     typedef std::unordered_map<char, unsigned int> & map_type;
@@ -59,6 +59,7 @@ public:
     std::string generate_bit_string(std::string, code_type);
     void generate_code_file(std::string, code_type);
     void generate_compressed_file(std::string, std::string);
+    void generate_binary_compressed_file(std::string, std::string);
     void compress_file(std::string, std::string);
     void decompress_file(std::string, std::string);
 };
