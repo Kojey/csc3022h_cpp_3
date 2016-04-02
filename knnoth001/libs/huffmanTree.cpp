@@ -22,11 +22,6 @@ void HuffmanTree::create_map(HuffmanTree::map_type map, std::string inputFile) {
     }
     char c;
     while(file.get(c)){
-//        // check if character is an ASCII letter
-//        if(int(c)<32 || int(c)>127){
-//            std::cout << "Error : " << inputFile <<" file contains non ASCII letters." << std::endl;
-//            return;
-//        }
         // check for new character
         // *new => add it to the map
         if(map.find(c)==map.end()) map.insert({c,1});
@@ -109,17 +104,6 @@ void HuffmanTree::generate_code_file(std::string outputFile, code_type map) {
     }
 }
 
-void HuffmanTree::generate_binary_code_file(std::string outputFile, code_type map) {
-    std::ofstream file((outputFile+".binhdr").c_str(), std::ios::binary);
-    if(file.is_open()){
-        for (const auto &n : map) {
-            file.write(reinterpret_cast<const char *>(&(n.first)), sizeof(n.first));
-            file.write(reinterpret_cast<const char *>(&(n.second)), sizeof(n.second));
-        }
-        file.close();
-    }
-}
-
 void HuffmanTree::generate_compressed_file(std::string outputFile, std::string bit_string) {
     std::ofstream file(outputFile.c_str());
     if(file.is_open()) {
@@ -150,7 +134,7 @@ void HuffmanTree::generate_binary_compressed_file(std::string outputFile, std::s
     }
 }
 
-void HuffmanTree::compress_file(std::string inputFile, std::string outputFile) {
+std::unordered_map<char, std::string>  HuffmanTree::compress_file(std::string inputFile, std::string outputFile) {
     // variables and typedef
     typedef HuffmanTree::HuffmanNode node_type;
     HuffmanTree tree;
@@ -163,32 +147,20 @@ void HuffmanTree::compress_file(std::string inputFile, std::string outputFile) {
     HuffmanTree::HuffmanNode node(tree.build_tree(prior_q));
     tree.generate_code_table(node,code_table,"");
     tree.generate_code_file(outputFile, code_table);
-    tree.generate_binary_code_file(outputFile, code_table);
     std::string bit_string = tree.generate_bit_string(inputFile,code_table);
     tree.generate_binary_compressed_file(outputFile, bit_string);
     tree.generate_compressed_file(outputFile, bit_string);
+    return code_table;
 }
 
-void HuffmanTree::decompress_file(std::string inputBinFile, std::string code_file) {
-    // read code_file and store it to a map
-    std::string inputFile = inputBinFile+".hdr";
-    std::unordered_map<std::string, std::string> code_table;
-
-    std::ifstream file(inputFile.c_str());
-    if(!file){
-        std::cout << "Error : Unable to open file " << inputFile << std::endl;
-        return;
+void HuffmanTree::decompress_file(std::string inputBinFile, std::string code_file, code_type map ){
+    // create inverse of map
+    std::unordered_map<std::string, char> code_table;
+    for( const auto& n : map ) {
+        code_table.insert({n.second, n.first});
     }
-    while(!file.eof()){
-        std::string c,s;
-        std::getline(file, c,'\n');
-        if(c=="end")break;
-        std::getline(file, s,'\n');
-        code_table.insert({s,c});
-    }
-    file.close();
     // read inputBinFile and convert it to a bit_stream
-    file.open((inputBinFile+".bin").c_str(), std::ios::binary);
+    std::ifstream file((inputBinFile+".bin").c_str(), std::ios::binary);
     if(!file){
         std::cout << "Error : Unable to open file " << inputBinFile << std::endl;
         return;
