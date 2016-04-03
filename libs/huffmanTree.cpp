@@ -127,7 +127,7 @@ void HuffmanTree::generate_binary_compressed_file(std::string outputFile, std::s
     }
 }
 
-std::unordered_map<char, std::string>  HuffmanTree::compress_file(std::string inputFile, std::string outputFile) {
+void  HuffmanTree::compress_file(std::string inputFile, std::string outputFile) {
     // variables and typedef
     typedef HuffmanTree::HuffmanNode node_type;
     HuffmanTree tree;
@@ -143,7 +143,6 @@ std::unordered_map<char, std::string>  HuffmanTree::compress_file(std::string in
     std::string bit_string = tree.generate_bit_string(inputFile,code_table);
     tree.generate_binary_compressed_file(outputFile, bit_string);
     tree.generate_compressed_file(outputFile, bit_string);
-    return code_table;
 }
 
 void HuffmanTree::decompress_file(std::string inputBinFile, std::string code_file){

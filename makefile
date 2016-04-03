@@ -19,13 +19,20 @@ $(EXE_NAME): huffencode.o
 	$(CPP) -o $(EXE_NAME) huffencode.o $(CPPFLAGS)  
 
 #Never submit binaries to your git repo or vula, so create a rule for cleaning up the binary objects just leaving your source code behind
+
+test.o: test.cpp
+		$(CPP) -c -o $@ $< $(CPPFLAGS)
+test: test.o
+		$(CPP) -o test test.o $(CPPFLAGS) 
 clean:
 	cd libs && make clean
-	rm *.o huffencode
+	rm *.o huffencode test
 # build entire project
 all:
 	cd libs && make
 	make
 #special rule to run your code... your tutor will probably love you for this!
 run:
-	export LD_LIBRARY_PATH=$(LIBRARY_LOAD_PATH) && ./huffencode $(args)
+	export LD_LIBRARY_PATH=$(LIBRARY_LOAD_PATH) && ./$(EXE_NAME) $(args)
+run_test:
+	export LD_LIBRARY_PATH=$(LIBRARY_LOAD_PATH) && ./test
