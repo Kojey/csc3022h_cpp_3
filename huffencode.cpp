@@ -18,6 +18,6 @@ int main(int argc, char * argv []){
     std::string inputFile = std::string(argv[1]); std::string outputFile = std::string(argv[2]);
     HuffmanTree tree;
     tree.compress_file(inputFile,outputFile);
-    tree.decompress_file(outputFile, "decompressed_"+inputFile);
+    tree.decompress_file(outputFile, "dcp_"+inputFile);
     return 0;
 }

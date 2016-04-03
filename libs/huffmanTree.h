@@ -27,8 +27,12 @@ public:
             left = nullptr;
             right = nullptr;
         }
-//        HuffmanNode(const HuffmanNode & node) = default;
-//        HuffmanNode(HuffmanNode && node) = default;
+        HuffmanNode(const HuffmanNode & node) {
+            this->data = node.data;
+            this->frequency = node.frequency;
+            this->left = node.left;
+            this->right = node.right;
+        }
         char get_data(void) const {
             return this->data;
         }
@@ -55,12 +59,12 @@ public:
     void fill_queue(queue_type, map_type);
     // build huffman tree
     HuffmanTree::HuffmanNode build_tree(HuffmanTree::queue_type);
-    void generate_code_table(node_type, code_type, std::string);
+    void generate_code_table(node_type, code_type, std::string);;
     std::string generate_bit_string(std::string, code_type);
     void generate_code_file(std::string, code_type);
     void generate_compressed_file(std::string, std::string);
     void generate_binary_compressed_file(std::string, std::string);
-    void compress_file(std::string, std::string);
+    std::unordered_map<char, std::string>  compress_file(std::string, std::string);
     void decompress_file(std::string, std::string);
 };
 

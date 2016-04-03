@@ -1,0 +1,29 @@
+MAKEFILES RULES
+* Each file (huffencode and huffmanTree) has a least two rules:
+	* make : to compile
+	* make clean : to clean ("make clean" of root folder cleans the whole project)
+* The driver file (huffencode.cpp) has two more rules:
+	* make run args="see template bellow": to run the program
+	* make all: to compile the whole project
+FILE'S ROLES
+* libs/huffmanTree.cpp: 
+	It contains methods requires that compress and decompress the file.
+* huffencode.cpp:
+	Master of the program.
+	Call compress and decompress method
+
+RUN THE PROGRAM
+Make sure that "export LD_LIBRARY_PATH=$(/libs)" is entered after compilation 
+otherwise library file won't be found.
+Run program with ./huffencode <inputBaseName.extension> <outputBaseName>
+
+OUPUT
+<outputBaseName> file contains number of bits as firt line and bit_string as second line
+<outputBaseName.bin> file containing bit stream of the compression. First 5 bytes of the file
+is accounted for the number of bits (4 byte, depending of the computer) and a new line character (1 byte)
+the second line of the file is the bit stream. Size of the compressed file can be calculated as fileSize-5
+<outputBaseName.hdr> file containing the code table
+<dcp_inputBaseName.extension> decopressed file.
+PS: note that decompression uses the binary compressed file and the file containg the code table.
+
+Certains members such as delete were not needed so were not implemented 
